@@ -1,0 +1,11 @@
+.venv/
+venv/
+__pycache__/
+node_modules/
+
+# Local tests and scratch files
+*test*.js
+*test*.mjs
+*scratch*.js
+*scratch*.mjs
+__browser_game_test.js

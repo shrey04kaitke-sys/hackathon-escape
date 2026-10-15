@@ -257,7 +257,7 @@
       els.clock.textContent = timeText(state);
       const elapsed = Math.max(0, (state.hour * 60 + state.minute) - (23 * 60 + 30));
       const steps = Math.min(15, Math.floor(elapsed / 2));
-      els.minutesLeft.textContent = state.ending ? "The deadline has passed or the story has ended." : Math.max(0, 30 - elapsed) + " minutes left until midnight";
+      els.minutesLeft.textContent = state.ending === "timeout" ? "The deadline has passed." : state.ending ? "The story has ended." : Math.max(0, 30 - elapsed) + " min to midnight";
       els.stepCount.textContent = steps + " / 15 steps";
       els.timeProgress.style.width = (steps / 15 * 100) + "%";
       els.timeProgress.parentElement.setAttribute("aria-valuenow", steps);
