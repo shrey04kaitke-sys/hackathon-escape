@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hackathon Escape</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f1ea;
+      --panel: #fffdf8;
+      --panel-alt: #e9f0e9;
+      --text: #20251f;
+      --muted: #5d685e;
+      --accent: #2d7054;
+      --accent-strong: #1e513c;
+      --accent-text: #ffffff;
+      --border: #cbd5ca;
+      --danger: #b63333;
+      --danger-bg: #f9dddd;
+      --progress: #d69b32;
+      --shadow: 0 10px 24px rgb(31 45 35 / 10%);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161b18;
+        --panel: #202722;
+        --panel-alt: #27352c;
+        --text: #edf4ed;
+        --muted: #b6c4b8;
+        --accent: #79c49a;
+        --accent-strong: #a4e0ba;
+        --accent-text: #102018;
+        --border: #46554a;
+        --danger: #ff8d8d;
+        --danger-bg: #492828;
+        --progress: #e2ae4c;
+        --shadow: 0 10px 24px rgb(0 0 0 / 30%);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { min-width: 320px; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { width: min(100% - 32px, 1040px); margin: 0 auto; padding: 32px 0 24px; }
+    header { margin-bottom: 24px; }
+    h1, h2, p { margin-top: 0; }
+    h1 { margin-bottom: 6px; font-size: clamp(2rem, 7vw, 3.4rem); letter-spacing: -0.04em; }
+    h2 { margin-bottom: 8px; font-size: 1.35rem; }
+    .lede { max-width: 700px; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(250px, .8fr); gap: 18px; align-items: start; }
+    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 22px; }
+    .story-panel { min-height: 440px; }
+    .scene-title { color: var(--accent); margin-bottom: 10px; }
+    #event-message { min-height: 54px; margin: 22px 0; padding: 12px 14px; background: var(--panel-alt); border-left: 4px solid var(--accent); border-radius: 6px; }
+    #choices { display: grid; gap: 10px; }
+    button {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+      text-align: left;
+    }
+    button:hover { background: var(--panel-alt); }
+    button:focus-visible, a:focus-visible { outline: 3px solid var(--progress); outline-offset: 3px; }
+    .key { display: inline-grid; width: 1.7em; height: 1.7em; margin-right: 8px; place-items: center; border-radius: 5px; background: var(--accent); color: var(--accent-text); font-weight: 700; }
+    .stat { margin-bottom: 20px; }
+    .clock { margin-bottom: 2px; font-size: clamp(2.4rem, 9vw, 4.2rem); font-variant-numeric: tabular-nums; font-weight: 800; letter-spacing: .03em; line-height: 1; }
+    .muted { color: var(--muted); }
+    .bar { height: 14px; overflow: hidden; border: 1px solid var(--border); border-radius: 999px; background: var(--panel-alt); }
+    .bar > span { display: block; height: 100%; width: 0; background: var(--progress); transition: width .25s ease; }
+    .battery-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .battery-bar > span { background: var(--accent); }
+    .battery-bar.critical > span { background: var(--danger); }
+    .battery-bar.plugged > span { background: var(--accent); }
+    .inventory { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; }
+    .inventory li { padding: 5px 9px; border: 1px solid var(--border); border-radius: 999px; background: var(--panel-alt); }
+    .empty { color: var(--muted); font-style: italic; }
+    #ending-screen { text-align: center; }
+    #ending-screen h2 { color: var(--accent); font-size: 2rem; }
+    .ending-stats { display: flex; justify-content: center; gap: 24px; margin: 24px 0; }
+    .ending-stats strong { display: block; font-size: 1.5rem; }
+    .primary { width: auto; padding-inline: 22px; background: var(--accent); color: var(--accent-text); text-align: center; font-weight: 700; }
+    footer { margin-top: 26px; color: var(--muted); font-size: .9rem; text-align: center; }
+    footer a { color: var(--accent-strong); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    @media (max-width: 680px) {
+      main { width: min(100% - 20px, 560px); padding-top: 22px; }
+      .layout { grid-template-columns: 1fr; }
+      .story-panel { min-height: 0; }
+      .panel { padding: 17px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Hackathon Escape</h1>
+      <p class="lede">It is 11:30 PM, your project is due at midnight, the laptop is at 2%, and a bug is blocking the final run. Can you escape with a working submission?</p>
+    </header>
+
+    <section id="game" class="layout" aria-live="polite">
+      <article class="panel story-panel">
+        <p class="muted">Current scene</p>
+        <h2 id="scene-title" class="scene-title"></h2>
+        <p id="scene-text"></p>
+        <p id="event-message"></p>
+        <h2 class="sr-only">Choices</h2>
+        <div id="choices"></div>
+      </article>
+
+      <aside class="panel">
+        <div class="stat">
+          <p class="muted">Current time</p>
+          <div id="clock" class="clock" aria-label="Current time"></div>
+          <div id="minutes-left" class="muted"></div>
+        </div>
+        <div class="stat">
+          <div class="battery-row"><span>Time progress</span><strong id="step-count"></strong></div>
+          <div class="bar" role="progressbar" aria-label="Two-minute steps elapsed" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0"><span id="time-progress"></span></div>
+        </div>
+        <div class="stat">
+          <div class="battery-row"><span>Battery</span><strong id="battery-label"></strong></div>
+          <div id="battery-bar" class="bar battery-bar" role="progressbar" aria-label="Battery level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="2"><span id="battery-progress"></span></div>
+        </div>
+        <h2>Backpack</h2>
+        <ul id="inventory" class="inventory"></ul>
+        <p id="ending-tracker" class="muted"></p>
+      </aside>
+    </section>
+
+    <section id="ending-screen" class="panel" hidden aria-live="polite">
+      <p class="muted">The hackathon clock stops here.</p>
+      <h2 id="ending-title"></h2>
+      <p id="ending-message"></p>
+      <div class="ending-stats">
+        <div><span class="muted">Final clock</span><strong id="ending-clock"></strong></div>
+        <div><span class="muted">Final battery</span><strong id="ending-battery"></strong></div>
+      </div>
+      <button id="play-again" class="primary" type="button">Play again <span class="muted">(R)</span></button>
+    </section>
+
+    <footer><a href="https://github.com/shrey04kaitke-sys/hackathon-escape">View this game on GitHub</a></footer>
+  </main>
+
+  <script>
+    "use strict";
+
+    // Game logic is kept independent from the DOM so the state transitions are testable.
+    const SCENES = {
+      desk: {
+        title: "The Final Hour",
+        text: "It is 11:30 PM. Your hackathon project is due at midnight, your laptop is at 2% battery, and a bug is blocking the final run."
+      },
+      lab: { title: "The Dark Lab", text: "You slip into the lab. A forgotten charger glints beneath a workbench." },
+      mentor: { title: "The Mentor's Corner", text: "Your mentor is asleep in a chair, surrounded by empty mugs." }
+    };
+    const ENDINGS = {
+      win: { title: "YOU WIN", message: "You fix the bug, plug in the laptop, and submit with 2 minutes to spare!" },
+      submitted: { title: "SUBMITTED WITH THE BUG", message: "You submit in a panic. The judges can see the bug, but at least something arrived." },
+      submittedAfterHint: { title: "SUBMITTED WITH THE BUG", message: "You submit the project, but the laptop is still dying and the bug remains." },
+      dead: { title: "LAPTOP DIED", message: "The screen flickers once, then goes black. Your last save is trapped inside." },
+      nap: { title: "TOOK A NAP", message: "You set an alarm for 11:35 PM and immediately fall asleep. It does not ring." },
+      timeout: { title: "RAN OUT OF TIME", message: "Midnight arrives before you can submit. The hackathon window is closed." }
+    };
+
+    function createState() {
+      return { hour: 23, minute: 30, battery: 2, inventory: [], bugInspected: false, hintReceived: false, location: "desk", ending: null, lastEvent: "Choose your first move. Every real action costs 2 minutes and 1% battery." };
+    }
+    function hasItem(state, item) { return state.inventory.includes(item); }
+    function timeText(state) { return String(state.hour).padStart(2, "0") + ":" + String(state.minute).padStart(2, "0"); }
+    function advance(state) {
+      state.minute += 2;
+      if (state.minute >= 60) { state.hour += Math.floor(state.minute / 60); state.minute %= 60; }
+      state.battery -= 1;
+    }
+    function finish(state, endingKey) { state.ending = endingKey; return state; }
+    function checkAutomaticEndings(state) {
+      if (state.battery <= 0 && !hasItem(state, "charger")) return finish(state, "dead");
+      if (state.hour >= 24 || (state.hour === 0 && state.minute >= 0)) return finish(state, "timeout");
+      return state;
+    }
+    function takeAction(state) { advance(state); return checkAutomaticEndings(state); }
+    function optionsFor(state) {
+      if (state.location === "desk") return ["Inspect the bug", "Search your backpack", "Go to the lab", "Visit the sleeping mentor", "Submit the project", "Take a nap"];
+      if (state.location === "lab") return ["Pick up the charger", "Return to the desk"];
+      return ["Offer the chai", "Leave quietly"];
+    }
+    function choose(state, selected) {
+      if (state.ending || !Number.isInteger(selected) || selected < 1 || selected > optionsFor(state).length) return state;
+      if (state.location === "desk") {
+        if (selected === 1) { state.bugInspected = true; state.lastEvent = "You find a suspicious off-by-one error, but you need a debugging hint."; return takeAction(state); }
+        if (selected === 2) {
+          if (hasItem(state, "chai")) state.lastEvent = "Your backpack is empty except for the chai you already found.";
+          else { state.inventory.push("chai"); state.lastEvent = "You find a warm cup of chai. Maybe it can wake someone up."; }
+          return takeAction(state);
+        }
+        if (selected === 3) { state.location = "lab"; return takeAction(state); }
+        if (selected === 4) { state.location = "mentor"; return takeAction(state); }
+        if (selected === 5) {
+          if (state.bugInspected && state.hintReceived && hasItem(state, "charger")) return finish(state, "win");
+          if (state.bugInspected && state.hintReceived) return finish(state, "submittedAfterHint");
+          return finish(state, "submitted");
+        }
+        if (selected === 6) return finish(state, "nap");
+      } else if (state.location === "lab") {
+        if (selected === 1) {
+          if (hasItem(state, "charger")) state.lastEvent = "You already have the charger.";
+          else { state.inventory.push("charger"); state.battery = 100; state.lastEvent = "You find the charger and connect it. The laptop jumps to 100%!"; }
+        }
+        state.location = "desk";
+        return takeAction(state);
+      } else {
+        if (selected === 1) {
+          if (hasItem(state, "chai")) { state.hintReceived = true; state.inventory.splice(state.inventory.indexOf("chai"), 1); state.lastEvent = "The mentor wakes, drinks the chai, and says: 'Check the loop boundary.'"; }
+          else state.lastEvent = "You whisper a greeting, but the mentor sleeps through it. Chai would help.";
+        }
+        state.location = "desk";
+        return takeAction(state);
+      }
+      return state;
+    }
+
+    // Browser rendering and event handling.
+    const els = {};
+    let state;
+    function loadEndings() {
+      try { return JSON.parse(localStorage.getItem("hackathonEscapeEndings") || "[]"); }
+      catch (_) { return []; }
+    }
+    function saveEnding(title) {
+      try {
+        const endings = loadEndings();
+        if (!endings.includes(title)) endings.push(title);
+        localStorage.setItem("hackathonEscapeEndings", JSON.stringify(endings));
+        return endings.length;
+      } catch (_) { return loadEndings().length; }
+    }
+    function render() {
+      const scene = SCENES[state.location];
+      els.sceneTitle.textContent = scene.title;
+      els.sceneText.textContent = scene.text;
+      els.event.textContent = state.lastEvent;
+      els.clock.textContent = timeText(state);
+      const elapsed = Math.max(0, (state.hour * 60 + state.minute) - (23 * 60 + 30));
+      const steps = Math.min(15, Math.floor(elapsed / 2));
+      els.minutesLeft.textContent = state.ending ? "The deadline has passed or the story has ended." : Math.max(0, 30 - elapsed) + " minutes left until midnight";
+      els.stepCount.textContent = steps + " / 15 steps";
+      els.timeProgress.style.width = (steps / 15 * 100) + "%";
+      els.timeProgress.parentElement.setAttribute("aria-valuenow", steps);
+      els.batteryLabel.textContent = Math.max(0, state.battery) + "%";
+      els.batteryProgress.style.width = Math.max(0, Math.min(100, state.battery)) + "%";
+      els.batteryProgress.parentElement.setAttribute("aria-valuenow", Math.max(0, state.battery));
+      els.batteryBar.classList.toggle("critical", state.battery <= 10 && !hasItem(state, "charger"));
+      els.batteryBar.classList.toggle("plugged", hasItem(state, "charger"));
+      els.inventory.innerHTML = "";
+      if (!state.inventory.length) { const empty = document.createElement("li"); empty.className = "empty"; empty.textContent = "Empty"; els.inventory.appendChild(empty); }
+      state.inventory.forEach(item => { const li = document.createElement("li"); li.textContent = item; els.inventory.appendChild(li); });
+      const count = state.ending ? saveEnding(ENDINGS[state.ending].title) : loadEndings().length;
+      els.tracker.textContent = "Endings found " + count + " of 5";
+      els.choices.innerHTML = "";
+      if (!state.ending) {
+        optionsFor(state).forEach((option, index) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.innerHTML = '<span class="key">' + (index + 1) + "</span>" + option;
+          button.addEventListener("click", () => { state = choose(state, index + 1); render(); });
+          els.choices.appendChild(button);
+        });
+      }
+      els.game.hidden = Boolean(state.ending);
+      els.ending.hidden = !state.ending;
+      if (state.ending) {
+        const ending = ENDINGS[state.ending];
+        els.endingTitle.textContent = ending.title;
+        els.endingMessage.textContent = ending.message;
+        els.endingClock.textContent = timeText(state);
+        els.endingBattery.textContent = Math.max(0, state.battery) + "%";
+      }
+    }
+    function restart() { state = createState(); render(); }
+    function init() {
+      ["game", "ending", "sceneTitle", "sceneText", "event", "choices", "clock", "minutesLeft", "stepCount", "timeProgress", "batteryLabel", "batteryProgress", "batteryBar", "inventory", "tracker", "endingTitle", "endingMessage", "endingClock", "endingBattery"].forEach(key => {
+        const id = { game: "game", ending: "ending-screen", sceneTitle: "scene-title", sceneText: "scene-text", event: "event-message", choices: "choices", clock: "clock", minutesLeft: "minutes-left", stepCount: "step-count", timeProgress: "time-progress", batteryLabel: "battery-label", batteryProgress: "battery-progress", batteryBar: "battery-bar", inventory: "inventory", tracker: "ending-tracker", endingTitle: "ending-title", endingMessage: "ending-message", endingClock: "ending-clock", endingBattery: "ending-battery" }[key];
+        els[key] = document.getElementById(id);
+      });
+      document.getElementById("play-again").addEventListener("click", restart);
+      document.addEventListener("keydown", event => {
+        if (event.key.toLowerCase() === "r" && state.ending) restart();
+        else if (!state.ending && /^[1-9]$/.test(event.key)) { state = choose(state, Number(event.key)); render(); }
+      });
+      restart();
+    }
+    if (typeof document !== "undefined") document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>

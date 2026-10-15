@@ -12,6 +12,12 @@ Requires Python 3.8 or newer. No external libraries are needed.
 python hackathon_escape.py
 ```
 
+## Play in the browser
+
+Play the browser version at [shrey04kaitke-sys.github.io/hackathon-escape](https://shrey04kaitke-sys.github.io/hackathon-escape/).
+It is a single self-contained [index.html](./index.html) file with its HTML, CSS,
+and JavaScript included, so it also works by double-clicking the file.
+
 ## How to play
 
 Type the number for an available choice and press Enter.
